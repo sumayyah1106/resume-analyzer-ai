@@ -93,9 +93,9 @@ def chips(items, cls):
     return "".join(f'<span class="chip {cls}">{i}</span>' for i in items)
 
 
-def bullets(items, icon="▸"):
+def bullets(items):
     return "".join(
-        f'<div class="bullet"><span>{icon}</span><span>{i}</span></div>'
+        f'<div class="bullet"><span>—</span><span>{i}</span></div>'
         for i in items
     )
 
@@ -120,7 +120,7 @@ def render_analysis(data):
     with col2:
         st.markdown(f"""
         <div class="card">
-            <div class="section-title">📝 Overall Summary</div>
+            <div class="section-title">Overall Summary</div>
             <p style="color:#cbd5e1; font-size:0.9rem; line-height:1.7; margin:0;">
                 {data.get("overall_summary", "")}
             </p>
@@ -131,15 +131,15 @@ def render_analysis(data):
     with col3:
         st.markdown(f"""
         <div class="card">
-            <div class="section-title">✅ Strengths</div>
-            {bullets(data.get("strengths", []), "✅")}
+            <div class="section-title">Strengths</div>
+            {bullets(data.get("strengths", []))}
         </div>
         """, unsafe_allow_html=True)
     with col4:
         st.markdown(f"""
         <div class="card">
-            <div class="section-title">⚠️ Weaknesses</div>
-            {bullets(data.get("weaknesses", []), "⚠️")}
+            <div class="section-title">Weaknesses</div>
+            {bullets(data.get("weaknesses", []))}
         </div>
         """, unsafe_allow_html=True)
 
@@ -147,35 +147,28 @@ def render_analysis(data):
     with col5:
         st.markdown(f"""
         <div class="card">
-            <div class="section-title">🔍 Skills Detected</div>
+            <div class="section-title">Skills Detected</div>
             <div>{chips(data.get("skills_detected", []), "chip-blue")}</div>
         </div>
         """, unsafe_allow_html=True)
     with col6:
         st.markdown(f"""
         <div class="card">
-            <div class="section-title">💡 Recommended Skills</div>
+            <div class="section-title">Recommended Skills</div>
             <div>{chips(data.get("recommended_skills", []), "chip-orange")}</div>
         </div>
         """, unsafe_allow_html=True)
 
     sf = data.get("section_feedback", {})
     if isinstance(sf, dict):
-        icons = {
-            "education": "🎓",
-            "experience": "💼",
-            "skills": "🛠️",
-            "projects": "🚀",
-            "summary": "📋"
-        }
         rows = "".join(
             f'<div style="margin-bottom:10px;">'
-            f'<span style="font-weight:600;color:#94a3b8;">{icons.get(k, "•")} {k.title()}:</span>'
+            f'<span style="font-weight:600;color:#94a3b8;">{k.title()}:</span>'
             f'<span style="color:#cbd5e1; font-size:0.88rem;"> {v}</span></div>'
             for k, v in sf.items() if v
         )
         st.markdown(
-            f'<div class="card"><div class="section-title">📂 Section Feedback</div>{rows}</div>',
+            f'<div class="card"><div class="section-title">Section Feedback</div>{rows}</div>',
             unsafe_allow_html=True
         )
 
@@ -188,11 +181,11 @@ def render_analysis(data):
             for i, s in enumerate(suggestions, 1)
         )
         st.markdown(
-            f'<div class="card"><div class="section-title">🎯 Improvement Suggestions</div>{numbered}</div>',
+            f'<div class="card"><div class="section-title">Improvement Suggestions</div>{numbered}</div>',
             unsafe_allow_html=True
         )
 
-    with st.expander("🗂️ Raw JSON Response"):
+    with st.expander("View Raw JSON Response"):
         st.json(data)
 
 
@@ -217,7 +210,6 @@ def call_api(endpoint: str, payload: dict):
 
 st.markdown("""
 <div style="text-align:center; padding:2rem 0 1.5rem;">
-    <div style="font-size:2.5rem;">📄</div>
     <h1 style="font-size:2.2rem; font-weight:700;
                background:linear-gradient(135deg,#60a5fa,#818cf8);
                -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0;">
@@ -232,7 +224,7 @@ st.markdown("""
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
 
-tab1, tab2 = st.tabs(["📁  File Upload  (PDF / DOCX / TXT)", "📋  Paste Resume Text"])
+tab1, tab2 = st.tabs(["File Upload  (PDF / DOCX / TXT)", "Paste Resume Text"])
 
 
 # ── Tab 1: File upload ────────────────────────────────────────────────────────
@@ -250,18 +242,18 @@ with tab1:
     with col_info:
         st.markdown("""
         <div class="card" style="margin-top:1.8rem;">
-            <div class="bullet">📊 <span>Score out of 100</span></div>
-            <div class="bullet">✅ <span>Strengths & weaknesses</span></div>
-            <div class="bullet">🔧 <span>Skills gap analysis</span></div>
-            <div class="bullet">📂 <span>Section-wise feedback</span></div>
-            <div class="bullet">🎯 <span>Actionable suggestions</span></div>
+            <div class="bullet"><span>—</span><span>Score out of 100</span></div>
+            <div class="bullet"><span>—</span><span>Strengths and weaknesses</span></div>
+            <div class="bullet"><span>—</span><span>Skills gap analysis</span></div>
+            <div class="bullet"><span>—</span><span>Section-wise feedback</span></div>
+            <div class="bullet"><span>—</span><span>Actionable suggestions</span></div>
         </div>
         """, unsafe_allow_html=True)
 
     if uploaded:
         st.markdown(f"`{uploaded.name}` — {uploaded.size / 1024:.1f} KB")
-        if st.button("🔍 Analyze Resume", key="btn_file"):
-            with st.spinner("Analyzing with AI… please wait 15–30 seconds"):
+        if st.button("Analyze Resume", key="btn_file"):
+            with st.spinner("Analyzing with AI... please wait 15-30 seconds"):
                 call_api(FILE_ENDPOINT, {
                     "files": {
                         "file": (
@@ -272,7 +264,7 @@ with tab1:
                     }
                 })
     else:
-        st.info("👆 Upload a PDF, DOCX, or TXT resume file to get started.")
+        st.info("Upload a PDF, DOCX, or TXT resume file to get started.")
 
 
 # ── Tab 2: Paste text ─────────────────────────────────────────────────────────
@@ -293,7 +285,7 @@ with tab2:
             "John Doe\n"
             "johndoe@email.com | LinkedIn: linkedin.com/in/johndoe\n\n"
             "EXPERIENCE\n"
-            "Software Engineer at XYZ Corp (2021–2024)\n"
+            "Software Engineer at XYZ Corp (2021-2024)\n"
             "- Built REST APIs using FastAPI and Python\n\n"
             "EDUCATION\n"
             "B.Tech Computer Science — ABC University (2021)"
@@ -310,11 +302,11 @@ with tab2:
             unsafe_allow_html=True
         )
 
-    if st.button("🔍 Analyze Resume", key="btn_text"):
+    if st.button("Analyze Resume", key="btn_text"):
         if char_count < 50:
             st.warning("Please paste more text — a resume should have at least 50 characters.")
         else:
-            with st.spinner("Analyzing with AI… please wait 15–30 seconds"):
+            with st.spinner("Analyzing with AI... please wait 15-30 seconds"):
                 call_api(TEXT_ENDPOINT, {"data": {"text": pasted_text}})
 
 
@@ -326,4 +318,3 @@ st.markdown(
     "No data stored · Processed in memory · Powered by LangChain + Groq</p>",
     unsafe_allow_html=True,
 )
-
